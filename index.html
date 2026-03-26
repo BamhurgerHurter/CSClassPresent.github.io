@@ -162,51 +162,46 @@
     } catch(e) {}
   }
 
-  let fameData = JSON.parse(localStorage.getItem('fameData') || '[]');
+  let fameData = [];
 
   async function syncLeaderboard() {
     try {
       const { data, error } = await supabaseClient
         .from('leaderboard')
         .select('*')
-        .order('score', { ascending: false })
-        .limit(10);
+        .order('score', { ascending: false });
       
       if (error) throw error;
       
       if (data && data.length > 0) {
-        const syncedData = data.map(row => ({ name: row.name, score: row.score }));
-        localStorage.setItem('fameData', JSON.stringify(syncedData));
-        fameData = syncedData;
+        fameData = data.map(row => ({ name: row.name, score: row.score }));
+        renderFame();
+      } else {
+        fameData = [];
         renderFame();
       }
     } catch (e) {
-      console.log('Using local leaderboard');
+      console.log('Error fetching leaderboard:', e);
+      fameData = [];
+      renderFame();
     }
   }
 
   async function pushToLeaderboard(name, score) {
-    try {
-      const { error } = await supabaseClient
-        .from('leaderboard')
-        .upsert({ name, score }, { onConflict: 'name' });
-      
-      if (error) throw error;
-    } catch (e) {
-      console.log('Local leaderboard only');
+    const { error } = await supabaseClient
+      .from('leaderboard')
+      .upsert({ name, score }, { onConflict: 'name' });
+    
+    if (error) {
+      console.log('Error pushing to leaderboard:', error);
+    } else {
+      await syncLeaderboard();
     }
   }
 
   window.updateScore = async function(name, score) {
-    const existing = fameData.find(e => e.name.toLowerCase() === name.toLowerCase());
-    if (existing) {
-      existing.score = Math.floor(score);
-    } else {
-      fameData.push({name, score: Math.floor(score)});
-    }
-    localStorage.setItem('fameData', JSON.stringify(fameData));
     await pushToLeaderboard(name, score);
-    renderFame();
+    await syncLeaderboard();
     console.log(`Added ${name} with ${score} points to leaderboard!`);
   };
 
@@ -223,18 +218,7 @@
   function addToFame() {
     const name = document.getElementById('click-name-input').value.trim();
     if (!name || points === 0) return;
-    const existing = fameData.find(e => e.name.toLowerCase() === name.toLowerCase());
-    if (existing) {
-      if (points > existing.score) {
-        existing.score = Math.floor(points);
-        pushToLeaderboard(existing.name, existing.score);
-      }
-    } else {
-      fameData.push({name, score: Math.floor(points)});
-      pushToLeaderboard(name, Math.floor(points));
-    }
-    localStorage.setItem('fameData', JSON.stringify(fameData));
-    renderFame();
+    pushToLeaderboard(name, Math.floor(points));
   }
   
   syncLeaderboard();
