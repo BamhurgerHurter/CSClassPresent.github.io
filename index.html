@@ -50,7 +50,7 @@
 </div>
 <div style="margin-top:30px;">
   <p>A computer named Jim left to go pick up carrots. His wife said 'While you're out, get some eggs.'. Jim never came back.".</p>
-  <img src="https://media.licdn.com/dms/image/v2/D4E03AQGk_K3flD3F4A/profile-displayphoto-scale_400_400/B4EZhDUdMdGYAk-/0/1753476093639?e=1776297600&v=beta&t=r1fBtdF1qJd3dnSExF_yhcwXXw-9P8j3RC6JUf0L_BM"
+  <img src="./mrbrown.jpg"
        class="grow-image"
        alt="Mr Brown"
        id="mr-brown-img"
@@ -197,6 +197,19 @@
     }
   }
 
+  window.updateScore = async function(name, score) {
+    const existing = fameData.find(e => e.name.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      existing.score = Math.floor(score);
+    } else {
+      fameData.push({name, score: Math.floor(score)});
+    }
+    localStorage.setItem('fameData', JSON.stringify(fameData));
+    await pushToLeaderboard(name, score);
+    renderFame();
+    console.log(`Added ${name} with ${score} points to leaderboard!`);
+  };
+
   function renderFame() {
     const list = document.getElementById('fame-list');
     if (fameData.length === 0) {
@@ -204,7 +217,7 @@
       return;
     }
     fameData.sort((a,b) => b.score - a.score);
-    list.innerHTML = fameData.map(e => `<li>${e.name} — ${e.score} points</li>`).join('');
+    list.innerHTML = fameData.map((e, i) => `<li>${i + 1}. ${e.name} — ${e.score} points</li>`).join('');
   }
 
   function addToFame() {
