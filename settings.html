@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+</head>
+<body id="settings-body" style="margin:0;font-family:'Times New Roman',sans-serif;text-align:center;background:#fff;">
+
+<div style="background:#888;color:white;padding:20px;font-size:24px;text-align:left;">
+  ⚙️ Settings
+</div>
+
+<div style="margin-top:20px;">
+  <a href="index.html" style="font-family:'Times New Roman',sans-serif;font-size:16px;">← Back to main page</a>
+</div>
+
+<div style="margin-top:40px;">
+  <p>Pick a background colour. It will be saved for all pages.</p>
+
+  <label style="font-size:18px;">Background colour: </label>
+  <input type="color" id="colour-picker" value="#ffffff" style="width:50px;height:30px;cursor:pointer;padding:0;border:1px solid #888;">
+
+  <br><br>
+
+  <button onclick="saveColour()" style="font-family:'Times New Roman',sans-serif;font-size:16px;padding:6px 16px;cursor:pointer;">Save</button>
+  <button onclick="resetColour()" style="font-family:'Times New Roman',sans-serif;font-size:16px;padding:6px 16px;cursor:pointer;margin-left:10px;">Reset to white</button>
+
+  <p id="save-msg" style="color:green;font-size:16px;"></p>
+</div>
+
+<script>
+  const saved = localStorage.getItem('bgColour');
+  if (saved) {
+    document.getElementById('settings-body').style.background = saved;
+    document.getElementById('colour-picker').value = saved;
+  }
+
+  document.getElementById('colour-picker').addEventListener('input', function() {
+    document.getElementById('settings-body').style.background = this.value;
+  });
+
+  function saveColour() {
+    const col = document.getElementById('colour-picker').value;
+    localStorage.setItem('bgColour', col);
+    document.getElementById('save-msg').textContent = 'Saved! ✅';
+    setTimeout(() => document.getElementById('save-msg').textContent = '', 2000);
+  }
+
+  function resetColour() {
+    localStorage.removeItem('bgColour');
+    document.getElementById('colour-picker').value = '#ffffff';
+    document.getElementById('settings-body').style.background = '#ffffff';
+    document.getElementById('save-msg').textContent = 'Reset to white ✅';
+    setTimeout(() => document.getElementById('save-msg').textContent = '', 2000);
+  }
+</script>
+</body>
+</html>

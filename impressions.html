@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Impressions</title>
+</head>
+<body id="impressions-body" style="margin:0;font-family:'Times New Roman',sans-serif;text-align:center;background:#fff;">
+
+<div style="background:#888;color:white;padding:20px;font-size:24px;text-align:left;">
+  🎙️ Impressions
+</div>
+
+<div style="margin-top:20px;">
+  <a href="index.html" style="font-family:'Times New Roman',sans-serif;font-size:16px;">← Back to main page</a>
+</div>
+
+<div style="margin-top:30px;">
+  <p>Have a listen to these impressions. Can you guess who they are?</p>
+</div>
+
+<!-- =====================================================
+     HOW TO ADD AN IMPRESSION:
+     Copy one of the blocks below and paste it after the others.
+     Change:
+       - "Person Name" to the name of who is being impersonated
+       - "Impression (1)" to the right number e.g. Impression (2), Impression (3)...
+       - "impressions/impression1.mp3" to your audio file path
+     ===================================================== -->
+
+<div style="margin:20px auto;max-width:400px;text-align:left;border:1px solid #888;padding:12px;">
+  <b>Person Name</b><br>
+  <audio controls style="margin-top:6px;">
+    <source src="impressions/impression1.mp3" type="audio/mpeg">
+    Your browser does not support audio.
+  </audio>
+  <br><small>Impression (1)</small>
+</div>
+
+<div style="margin:20px auto;max-width:400px;text-align:left;border:1px solid #888;padding:12px;">
+  <b>Person Name</b><br>
+  <audio controls style="margin-top:6px;">
+    <source src="impressions/impression2.mp3" type="audio/mpeg">
+    Your browser does not support audio.
+  </audio>
+  <br><small>Impression (2)</small>
+</div>
+
+<div style="margin:20px auto;max-width:400px;text-align:left;border:1px solid #888;padding:12px;">
+  <b>Person Name</b><br>
+  <audio controls style="margin-top:6px;">
+    <source src="impressions/impression3.mp3" type="audio/mpeg">
+    Your browser does not support audio.
+  </audio>
+  <br><small>Impression (3)</small>
+</div>
+
+<!-- ADD MORE BLOCKS ABOVE THIS COMMENT -->
+
+<script>
+  const savedBg = localStorage.getItem('bgColour');
+  if (savedBg) document.getElementById('impressions-body').style.background = savedBg;
+</script>
+</body>
+</html>
