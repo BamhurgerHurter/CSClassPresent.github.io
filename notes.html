@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal Notes</title>
+</head>
+<body id="notes-body" style="margin:0;font-family:'Times New Roman',sans-serif;text-align:center;background:#fff;">
+
+<div style="background:#888;color:white;padding:20px;font-size:24px;text-align:left;">
+  📝 Personal Notes - Enter your name to see your note, all lowercase, first name only!!!!
+</div>
+
+<div style="margin-top:20px;">
+  <a href="index.html" style="font-family:'Times New Roman',sans-serif;font-size:16px;">← Back to main page</a>
+</div>
+
+<div style="margin-top:40px;">
+  <p>Type your name below to find your note. All lowercase, first name only:</p>
+  <input type="text" id="name-input" placeholder="Your name..." style="font-family:'Times New Roman',sans-serif;font-size:18px;padding:6px;width:220px;">
+  <br><br>
+  <button onclick="lookupNote()" style="font-family:'Times New Roman',sans-serif;font-size:16px;padding:6px 16px;cursor:pointer;">Find my note</button>
+</div>
+
+<div id="note-output" style="margin-top:30px;font-size:20px;font-family:'Times New Roman',sans-serif;"></div>
+
+<script>
+  const savedBg = localStorage.getItem('bgColour');
+  if (savedBg) document.getElementById('notes-body').style.background = savedBg;
+// i forgot so many peolpe bruh    fgdsfdf
+
+  const notes = {
+    "jj":"JJ, you are on the end of the row and also pretty cool",
+    "marcus": "I like your hair",
+    "hazel": "you are very kind when marking my tests, thank you.",
+    "alfie": "One of you is my favourite alfie, fight to the death for that title",
+    "matas": "I have nothing good to say about you",
+    "james": "level 10 ohio gyatt. I'm gonna be honest bruh idk what makes you laugh",
+    "kyle": "more like kylie hahahaha, do you get it, like kyle lee. Anyway kyle you are in the corner and your head is always blocked by someone",
+    "cyrus": "imagine getting a question wrong LOL",
+    "samuel": "i played football with you in year 4 and you were much better than me",
+    "joseph": "you can solve a rubick's cube.. I think",
+    "harry": "Harry I made up a character that shares a name with you, I call him hairy davies and he licks the top of people's heads",
+    "johnny": "One of the chillest people i know",
+    "ben": "2nd best house, passable",
+    "hayden": "Hey Dennis HAHAHAHAHAHAHAHAHAHA",
+    "benas": "Hello Benas",
+    "alex": "You do not deserve a message, you cheated at smartrevise",
+    "darsh": "Antonio asked me to tell you to stop taking his chocolates, 'they are for matthew', he said",
+    "leo": "Hey Leo im gonna be honest bruh i dont know you that well",
+    "matthew": "This file is twice the size as the other notes, I wonder why? Anyway you had the best house.",
+    "steve": "If you are seeing this you let the class go on my website, thanks. Also cheers for the nomination sir i appreciate it"
+  };
+
+
+  function lookupNote() {
+    const input = document.getElementById('name-input').value.trim();
+    const output = document.getElementById('note-output');
+    if (!input) {
+      output.innerHTML = 'Please type your name!';
+      return;
+    }
+    const key = input.toLowerCase();
+    if (notes[key]) {
+      output.innerHTML = '📬 ' + notes[key];
+    } else {
+      output.innerHTML = "What's up " + input + " I promise I didnt forget you.";
+    }
+  }
+
+  // Allow pressing Enter
+  document.getElementById('name-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') lookupNote();
+  });
+</script>
+</body>
+</html>
