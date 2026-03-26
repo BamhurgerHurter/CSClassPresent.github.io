@@ -69,7 +69,7 @@
   </div>
 
   <div id="hall-of-fame" style="margin-top:40px;">
-    <p>Leaderboard (This may or may not be saved to the website and definitely wont reset when you change computers)</p>
+    <p>Leaderboard (synced online!)</p>
     <ol id="fame-list"><li>Nobody yet... click his face!</li></ol>
     <div style="margin-top:8px;">
       <input type="text" id="click-name-input" placeholder="Enter name">
@@ -78,7 +78,13 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // TODO: Replace these with your Supabase credentials
+  const SUPABASE_URL = 'https://wjuasaztykcgrgtwhtuu.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqdWFzYXp0eWtjZ3JndHdodHV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NDM2NjksImV4cCI6MjA5MDExOTY2OX0.lQ-5jOg3SYgw1ghiGtWkfyG7PRtWzCidVCI7JLdUIhY';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   const savedBg = localStorage.getItem('bgColour');
   if (savedBg) document.getElementById('main-body').style.background = savedBg;
 
@@ -157,6 +163,40 @@
   }
 
   let fameData = JSON.parse(localStorage.getItem('fameData') || '[]');
+
+  async function syncLeaderboard() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('*')
+        .order('score', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        const syncedData = data.map(row => ({ name: row.name, score: row.score }));
+        localStorage.setItem('fameData', JSON.stringify(syncedData));
+        fameData = syncedData;
+        renderFame();
+      }
+    } catch (e) {
+      console.log('Using local leaderboard');
+    }
+  }
+
+  async function pushToLeaderboard(name, score) {
+    try {
+      const { error } = await supabaseClient
+        .from('leaderboard')
+        .upsert({ name, score }, { onConflict: 'name' });
+      
+      if (error) throw error;
+    } catch (e) {
+      console.log('Local leaderboard only');
+    }
+  }
+
   function renderFame() {
     const list = document.getElementById('fame-list');
     if (fameData.length === 0) {
@@ -172,13 +212,19 @@
     if (!name || points === 0) return;
     const existing = fameData.find(e => e.name.toLowerCase() === name.toLowerCase());
     if (existing) {
-      if (points > existing.score) existing.score = Math.floor(points);
+      if (points > existing.score) {
+        existing.score = Math.floor(points);
+        pushToLeaderboard(existing.name, existing.score);
+      }
     } else {
       fameData.push({name, score: Math.floor(points)});
+      pushToLeaderboard(name, Math.floor(points));
     }
     localStorage.setItem('fameData', JSON.stringify(fameData));
     renderFame();
   }
+  
+  syncLeaderboard();
   renderFame();
   updateDisplay();
 </script>
