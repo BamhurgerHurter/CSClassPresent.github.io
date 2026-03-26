@@ -56,6 +56,7 @@
        id="mr-brown-img"
        onclick="addPoint(event)">
   <div id="points-counter" style="font-size:22px;">Mr Brown Points: <span id="pts">0</span></div>
+  <div id="super-points-display" style="font-size:18px;color:#933;display:none;">Mr Brown Super Points: <span id="spts">0</span> ⭐</div>
   <div id="per-second">Points per second: 0</div>
 
   <div id="upgrade-shop" style="margin-top:20px;">
@@ -89,6 +90,7 @@
   if (savedBg) document.getElementById('main-body').style.background = savedBg;
 
   let points = 0;
+  let superPoints = 0;
   const upgrades = {
     cursor:  { owned: 0, baseCost: 10,   costMult: 1.5,  clickBonus: 1,  pps: 0  },
     auto:    { owned: 0, baseCost: 50,   costMult: 1.6,  clickBonus: 0,  pps: 1  },
@@ -97,6 +99,16 @@
     school:  { owned: 0, baseCost: 2000, costMult: 1.8,  clickBonus: 0,  pps: 20 },
     dns:     { owned: 0, baseCost: 5000, costMult: 2.5,  clickBonus: 0,  pps: 0,  ppsMult: 3 },
   };
+
+  if (localStorage.getItem('superPoints')) {
+    superPoints = parseInt(localStorage.getItem('superPoints'));
+  }
+  if (localStorage.getItem('mrBrownUpgrades')) {
+    const savedUpgrades = JSON.parse(localStorage.getItem('mrBrownUpgrades'));
+    for (const key in savedUpgrades) {
+      if (upgrades[key]) upgrades[key].owned = savedUpgrades[key].owned;
+    }
+  }
 
   function getCost(key) {
     const u = upgrades[key];
@@ -124,14 +136,41 @@
     playBleep();
   }
 
+  let explosionTriggered = false;
+
+  function checkInfinity() {
+    if (!explosionTriggered && points >= 1000000000) {
+      explosionTriggered = true;
+      claimSuperPoint();
+    }
+  }
+
+  function claimSuperPoint() {
+    superPoints++;
+    points = 0;
+    for (const key in upgrades) {
+      upgrades[key].owned = 0;
+    }
+    localStorage.setItem('superPoints', superPoints);
+    localStorage.setItem('mrBrownPoints', points);
+    localStorage.setItem('mrBrownUpgrades', JSON.stringify(upgrades));
+    updateDisplay();
+    window.location.href = 'infinity.html';
+  }
+
   function updateDisplay() {
     document.getElementById('pts').textContent = Math.floor(points);
     document.getElementById('per-second').textContent = 'Points per second: ' + getPPS().toFixed(1);
+    if (superPoints > 0) {
+      document.getElementById('super-points-display').style.display = 'block';
+      document.getElementById('spts').textContent = superPoints;
+    }
     for (const key in upgrades) {
       const cost = getCost(key);
       document.getElementById('cost-' + key).textContent = cost;
       document.getElementById('upg-' + key).disabled = points < cost;
     }
+    checkInfinity();
   }
 
   setInterval(function() {
@@ -188,9 +227,10 @@
   }
 
   async function pushToLeaderboard(name, score) {
+    const displayScore = superPoints > 0 ? superPoints : Math.floor(points);
     const { error } = await supabaseClient
       .from('leaderboard')
-      .upsert({ name, score }, { onConflict: 'name' });
+      .upsert({ name, score: displayScore }, { onConflict: 'name' });
     
     if (error) {
       console.log('Error pushing to leaderboard:', error);
@@ -200,9 +240,10 @@
   }
 
   window.updateScore = async function(name, score) {
-    await pushToLeaderboard(name, score);
+    const displayScore = superPoints > 0 ? superPoints : Math.floor(score);
+    await pushToLeaderboard(name, displayScore);
     await syncLeaderboard();
-    console.log(`Added ${name} with ${score} points to leaderboard!`);
+    console.log(`Added ${name} with ${displayScore} points to leaderboard!`);
   };
 
   function renderFame() {
@@ -218,7 +259,8 @@
   function addToFame() {
     const name = document.getElementById('click-name-input').value.trim();
     if (!name || points === 0) return;
-    pushToLeaderboard(name, Math.floor(points));
+    const displayScore = superPoints > 0 ? superPoints : Math.floor(points);
+    pushToLeaderboard(name, displayScore);
   }
   
   syncLeaderboard();
