@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome Class!</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- DNS Arrow Banner -->
+  <div class="dns-banner" id="dnsBanner">
+    <div class="dns-arrow-wrap">
+      <div class="dns-arrow">
+        <span class="arrow-line"></span>
+        <span class="arrow-up">↑</span>
+      </div>
+      <p class="dns-text">I'm using a <strong>Domain Name Server</strong> — that URL up there isn't just an IP address!</p>
+      <button class="dns-close" onclick="document.getElementById('dnsBanner').style.display='none'">✕</button>
+    </div>
+  </div>
+
+  <!-- Settings Bar (top) -->
+  <div class="settings-bar">
+    <div class="settings-inner">
+      <span class="settings-brand">🎓 ClassDash</span>
+      <div class="settings-controls">
+        <label class="toggle-wrap">
+          <span>Dark Mode</span>
+          <input type="checkbox" id="darkToggle" onchange="toggleDark()" />
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-wrap">
+          <span>Confetti</span>
+          <input type="checkbox" id="confettiToggle" checked onchange="toggleConfetti()" />
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-wrap">
+          <span>Sound FX</span>
+          <input type="checkbox" id="soundToggle" onchange="toggleSound()" />
+          <span class="toggle-slider"></span>
+        </label>
+        <button class="settings-btn" onclick="resetGame()">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Nav -->
+  <nav class="main-nav">
+    <button class="nav-tab active" data-tab="game" onclick="switchTab('game', this)">🎮 Main</button>
+    <button class="nav-tab" data-tab="impressions" onclick="switchTab('impressions', this)">⭐ Impressions</button>
+    <button class="nav-tab" data-tab="notes" onclick="switchTab('notes', this)">📝 Personal Notes</button>
+  </nav>
+
+  <!-- ═══════════════ TAB: GAME (Main) ═══════════════ -->
+  <section class="tab-content active" id="tab-game">
+
+    <!-- Hero Title -->
+    <div class="hero">
+      <div class="hero-badge">🏆 Nomination Edition</div>
+      <h1 class="hero-title">Welcome Class!</h1>
+      <p class="hero-sub">This is my present to you as thanks for me getting one of the nominations.</p>
+    </div>
+
+    <!-- Game Layout -->
+    <div class="game-wrap">
+
+      <!-- Left: Stats -->
+      <div class="game-stats">
+        <div class="stat-card main-stat">
+          <div class="stat-label">Total Impressions</div>
+          <div class="stat-value" id="totalClicks">0</div>
+          <div class="stat-rate" id="cps">+0 / sec</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Session</div>
+          <div class="stat-value small" id="sessionClicks">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Multiplier</div>
+          <div class="stat-value small" id="multiplier">x1</div>
+        </div>
+
+        <!-- Milestone List -->
+        <div class="milestones-box">
+          <div class="milestones-title">🏅 Milestones</div>
+          <ul class="milestones-list" id="milestonesList"></ul>
+        </div>
+      </div>
+
+      <!-- Centre: Clicker -->
+      <div class="clicker-centre">
+        <div class="click-hint">Click to make an impression!</div>
+        <div class="clicker-wrap" id="clickerWrap">
+          <div class="click-ring ring1"></div>
+          <div class="click-ring ring2"></div>
+          <img
+            id="clickerImg"
+            src="https://media.licdn.com/dms/image/v2/D4E03AQGk_K3flD3F4A/profile-displayphoto-scale_400_400/B4EZhDUdMdGYAk-/0/1753476093639?e=1776297600&v=beta&t=r1fBtdF1qJd3dnSExF_yhcwXXw-9P8j3RC6JUf0L_BM"
+            alt="Click me!"
+            onclick="handleClick(event)"
+            draggable="false"
+          />
+          <div class="clicker-glow" id="clickerGlow"></div>
+        </div>
+        <div class="float-container" id="floatContainer"></div>
+        <div class="combo-display" id="comboDisplay"></div>
+      </div>
+
+      <!-- Right: Upgrades -->
+      <div class="upgrades-panel">
+        <div class="upgrades-title">⚡ Upgrades</div>
+        <div class="upgrades-list" id="upgradesList"></div>
+        <div class="auto-title">🤖 Auto-Clickers</div>
+        <div class="upgrades-list" id="autoList"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════ TAB: IMPRESSIONS ═══════════════ -->
+  <section class="tab-content" id="tab-impressions">
+    <div class="tab-hero">
+      <h2>⭐ Impressions Board</h2>
+      <p>A leaderboard of your biggest clicking achievements</p>
+    </div>
+    <div class="impressions-grid" id="impressionsGrid">
+      <!-- Populated by JS -->
+    </div>
+    <div class="achievement-wall">
+      <h3>🎖 Achievement Wall</h3>
+      <div class="achievement-grid" id="achievementGrid"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TAB: PERSONAL NOTES ═══════════════ -->
+  <section class="tab-content" id="tab-notes">
+    <div class="tab-hero">
+      <h2>📝 Personal Notes</h2>
+      <p>Jot down anything you want to remember</p>
+    </div>
+    <div class="notes-layout">
+      <div class="notes-composer">
+        <input type="text" id="noteTitle" placeholder="Note title…" class="note-input" />
+        <textarea id="noteBody" placeholder="Write something here…" class="note-textarea"></textarea>
+        <div class="note-meta-row">
+          <select id="noteTag" class="note-select">
+            <option value="💡">💡 Idea</option>
+            <option value="📌">📌 Important</option>
+            <option value="❤️">❤️ Gratitude</option>
+            <option value="🔥">🔥 Excited</option>
+            <option value="📚">📚 Learning</option>
+          </select>
+          <button class="note-add-btn" onclick="addNote()">+ Add Note</button>
+        </div>
+      </div>
+      <div class="notes-feed" id="notesFeed">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Confetti canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
